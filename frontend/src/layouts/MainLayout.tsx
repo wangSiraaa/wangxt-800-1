@@ -14,14 +14,14 @@ import {
 } from '@ant-design/icons';
 import { clearAuth, getCurrentUser, RoleLabels } from '../utils';
 import { Role } from '../types';
-import Dashboard from './Dashboard';
-import BatchList from './BatchList';
-import BatchDetail from './BatchDetail';
-import BatchCreate from './BatchCreate';
-import ReviewList from './ReviewList';
-import PaymentList from './PaymentList';
-import AnomalyReview from './AnomalyReview';
-import SubsidyRule from './SubsidyRule';
+import Dashboard from '../pages/Dashboard';
+import BatchList from '../pages/BatchList';
+import BatchDetail from '../pages/BatchDetail';
+import BatchCreate from '../pages/BatchCreate';
+import ReviewList from '../pages/ReviewList';
+import PaymentList from '../pages/PaymentList';
+import AnomalyReview from '../pages/AnomalyReview';
+import SubsidyRule from '../pages/SubsidyRule';
 import type { User } from '../types';
 
 const { Header, Sider, Content } = Layout;

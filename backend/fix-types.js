@@ -1,0 +1,10 @@
+const fs = require('fs');
+let reviews = fs.readFileSync('src/routes/reviews.ts', 'utf8');
+reviews = reviews.replace('z.nativeEnum(ReviewType)', 'z.enum(Object.values(ReviewType) as unknown as [string, ...string[]])');
+reviews = reviews.replace('SECOND_REVIEW].includes(batch.status)', 'SECOND_REVIEW].includes(batch.status as any)');
+reviews = reviews.replace('getNextStatus(batch.status, data.reviewType, data.isPassed)', 'getNextStatus(batch.status as any, data.reviewType as any, data.isPassed)');
+fs.writeFileSync('src/routes/reviews.ts', reviews);
+let rules = fs.readFileSync('src/services/businessRules.ts', 'utf8');
+rules = rules.replace('allowedStatuses.includes(batch.status)', 'allowedStatuses.includes(batch.status as any)');
+fs.writeFileSync('src/services/businessRules.ts', rules);
+console.log('Fix done');

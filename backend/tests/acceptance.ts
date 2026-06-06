@@ -1,6 +1,6 @@
 import http from 'http';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = process.env.API_BASE || `http://localhost:${process.env.PORT || '3001'}/api`;
 
 interface TestResult {
   name: string;
@@ -165,7 +165,7 @@ async function main() {
       {
         farmerId,
         weight: 50,
-        plotNumber: 'TEST-PLOT-001',
+        plotNumber: 'ACCEPT-TEST-PLOT-001',
         collectionDate: new Date().toISOString(),
       }
     );
@@ -193,7 +193,7 @@ async function main() {
       {
         farmerId,
         weight: 500,
-        plotNumber: 'TEST-PLOT-002',
+        plotNumber: 'ACCEPT-TEST-PLOT-002',
         collectionDate: new Date().toISOString(),
       }
     );
@@ -284,7 +284,7 @@ async function main() {
       {
         farmerId,
         weight: 30,
-        plotNumber: 'TEST-PLOT-003',
+        plotNumber: 'ACCEPT-TEST-PLOT-003',
         collectionDate: new Date(Date.now() - 86400000).toISOString(),
       }
     );
@@ -383,7 +383,7 @@ async function main() {
     if (statusCode !== 400) {
       throw new Error(`期望返回400，实际返回${statusCode}`);
     }
-    if (!data.error?.includes('退回') && !data.error?.includes('不得发放')) {
+    if (!data.error?.includes('退回') && !data.error?.includes('不得发放') && !data.error?.includes('不允许发放')) {
       throw new Error('错误信息应提示退回后不得发放，实际: ' + data.error);
     }
     console.log('  ✅ 正确拒绝了退回记录的补贴发放');

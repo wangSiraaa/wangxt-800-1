@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = process.env.API_BASE || `http://localhost:${process.env.PORT || '3001'}/api`;
 const results = [];
 function request(options, body) {
     return new Promise((resolve, reject) => {

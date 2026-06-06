@@ -12,8 +12,11 @@ const reviewSchema = z.object({
   batchId: z.string().min(1),
   opinion: z.string().min(1),
   isPassed: z.boolean(),
-  reviewType: z.nativeEnum(ReviewType),
+  reviewType: z.enum(Object.values(ReviewType) as [ReviewType, ...ReviewType[]]),
 });
+
+const isBatchStatus = (status: string): status is BatchStatus =>
+  (Object.values(BatchStatus) as string[]).includes(status);
 
 const getNextStatus = (
   currentStatus: BatchStatus,
@@ -98,6 +101,11 @@ router.post('/review', authMiddleware, async (req: AuthRequest, res: Response<Ap
       return;
     }
 
+    if (!isBatchStatus(batch.status)) {
+      res.status(400).json({ success: false, error: '批次状态异常，无法审核' });
+      return;
+    }
+
     if (
       req.user.role === Role.TOWN_AUDITOR &&
       batch.status !== BatchStatus.SUBMITTED
@@ -106,9 +114,14 @@ router.post('/review', authMiddleware, async (req: AuthRequest, res: Response<Ap
       return;
     }
 
+    const financeReviewStatuses: BatchStatus[] = [
+      BatchStatus.TOWN_APPROVED,
+      BatchStatus.SECOND_REVIEW,
+    ];
+
     if (
       req.user.role === Role.FINANCE_REVIEWER &&
-      ![BatchStatus.TOWN_APPROVED, BatchStatus.SECOND_REVIEW].includes(batch.status)
+      !financeReviewStatuses.includes(batch.status)
     ) {
       res.status(400).json({ success: false, error: '当前状态无法进行财政复核' });
       return;
