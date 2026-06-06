@@ -8,6 +8,7 @@ import reviewRoutes from './routes/reviews';
 import paymentRoutes from './routes/payments';
 import supervisorRoutes from './routes/supervisor';
 import subsidyRuleRoutes from './routes/subsidyRules';
+import receiptRoutes from './routes/receipts';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -36,6 +37,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/supervisor', supervisorRoutes);
 app.use('/api/subsidy-rules', subsidyRuleRoutes);
+app.use('/api/receipts', receiptRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

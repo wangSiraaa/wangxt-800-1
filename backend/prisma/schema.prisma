@@ -20,6 +20,7 @@ model User {
   reviews          Review[]
   payments         Payment[]
   corrections      Correction[]
+  receipts         Receipt[]
 }
 
 model Farmer {
@@ -71,6 +72,7 @@ model Batch {
   reviews     Review[]
   payments    Payment[]
   corrections Correction[]
+  receipts    Receipt[]
 }
 
 model Photo {
@@ -120,4 +122,15 @@ model Correction {
   correctedAmount Float
   reason          String
   createdAt       DateTime @default(now())
+}
+
+model Receipt {
+  id          String   @id @default(uuid())
+  batchId     String
+  batch       Batch    @relation(fields: [batchId], references: [id])
+  handlerId   String
+  handler     User     @relation(fields: [handlerId], references: [id])
+  receiptType String
+  content     String
+  handledAt   DateTime @default(now())
 }

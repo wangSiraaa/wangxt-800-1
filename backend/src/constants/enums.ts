@@ -31,3 +31,12 @@ export const ReviewType = {
 } as const;
 
 export type ReviewType = (typeof ReviewType)[keyof typeof ReviewType];
+
+export const ReceiptType = {
+  TOWN_RECEIPT: 'TOWN_RECEIPT',
+  FINANCE_RECEIPT: 'FINANCE_RECEIPT',
+  PAYMENT_RECEIPT: 'PAYMENT_RECEIPT',
+  CORRECTION_RECEIPT: 'CORRECTION_RECEIPT',
+} as const;
+
+export type ReceiptType = (typeof ReceiptType)[keyof typeof ReceiptType];

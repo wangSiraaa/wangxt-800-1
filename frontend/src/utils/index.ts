@@ -1,4 +1,4 @@
-import { Role, BatchStatus, ReviewType } from '../types';
+import { Role, BatchStatus, ReviewType, ReceiptType } from '../types';
 
 export const RoleLabels: Record<Role, string> = {
   [Role.RECYCLER]: '回收站',
@@ -40,6 +40,13 @@ export const ReviewTypeLabels: Record<ReviewType, string> = {
   [ReviewType.FINANCE_REVIEW]: '财政复核',
   [ReviewType.SECOND_REVIEW]: '二次复核',
   [ReviewType.CORRECTION]: '更正',
+};
+
+export const ReceiptTypeLabels: Record<ReceiptType, string> = {
+  [ReceiptType.TOWN_RECEIPT]: '乡镇处理回执',
+  [ReceiptType.FINANCE_RECEIPT]: '财政处理回执',
+  [ReceiptType.PAYMENT_RECEIPT]: '发放处理回执',
+  [ReceiptType.CORRECTION_RECEIPT]: '更正处理回执',
 };
 
 export const getAuthToken = (): string | null => {

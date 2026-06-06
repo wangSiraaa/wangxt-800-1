@@ -11,6 +11,7 @@ import type {
   Correction,
   SubsidyRule,
   DashboardData,
+  Receipt,
 } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
@@ -126,6 +127,13 @@ export const subsidyRuleApi = {
     api.post<ApiResponse<SubsidyRule>>('/subsidy-rules', data).then((r) => r.data),
   update: (id: string, data: any) =>
     api.put<ApiResponse<SubsidyRule>>(`/subsidy-rules/${id}`, data).then((r) => r.data),
+};
+
+export const receiptApi = {
+  getByBatchId: (batchId: string) =>
+    api.get<ApiResponse<Receipt[]>>(`/receipts/batch/${batchId}`).then((r) => r.data),
+  submit: (data: { batchId: string; content: string; receiptType: string }) =>
+    api.post<ApiResponse<Receipt>>('/receipts/submit', data).then((r) => r.data),
 };
 
 export default api;

@@ -8,9 +8,6 @@ export class BusinessRuleError extends Error {
   }
 }
 
-const isBatchStatus = (status: string): status is BatchStatus =>
-  (Object.values(BatchStatus) as string[]).includes(status);
-
 export const checkPhotoRequired = async (batchId: string): Promise<void> => {
   const batch = await prisma.batch.findUnique({
     where: { id: batchId },
@@ -155,12 +152,12 @@ export const checkPaymentAllowed = async (batchId: string): Promise<void> => {
     throw new BusinessRuleError('复核已退回，补贴金额不得发放');
   }
 
-  const allowedStatuses: BatchStatus[] = [
+  const allowedStatuses = [
     BatchStatus.FINANCE_APPROVED,
     BatchStatus.SECOND_REVIEW,
   ];
 
-  if (!isBatchStatus(batch.status) || !allowedStatuses.includes(batch.status)) {
+  if (!allowedStatuses.includes(batch.status as any)) {
     throw new BusinessRuleError('当前状态不允许发放补贴');
   }
 };

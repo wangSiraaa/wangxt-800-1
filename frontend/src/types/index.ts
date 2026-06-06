@@ -26,6 +26,13 @@ export enum ReviewType {
   CORRECTION = 'CORRECTION',
 }
 
+export enum ReceiptType {
+  TOWN_RECEIPT = 'TOWN_RECEIPT',
+  FINANCE_RECEIPT = 'FINANCE_RECEIPT',
+  PAYMENT_RECEIPT = 'PAYMENT_RECEIPT',
+  CORRECTION_RECEIPT = 'CORRECTION_RECEIPT',
+}
+
 export interface User {
   id: string;
   username: string;
@@ -89,6 +96,16 @@ export interface Correction {
   createdAt: string;
 }
 
+export interface Receipt {
+  id: string;
+  batchId: string;
+  handlerId: string;
+  handler: { id: string; name: string };
+  receiptType: ReceiptType;
+  content: string;
+  handledAt: string;
+}
+
 export interface Batch {
   id: string;
   batchNo: string;
@@ -110,6 +127,7 @@ export interface Batch {
   reviews: Review[];
   payments: Payment[];
   corrections?: Correction[];
+  receipts?: Receipt[];
 }
 
 export interface SubsidyRule {

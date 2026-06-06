@@ -72,6 +72,9 @@ router.get('/pending', authMiddleware, async (req: AuthRequest, res: Response<Ap
         reviews: {
           include: { reviewer: { select: { id: true, name: true } } },
         },
+        receipts: {
+          include: { handler: { select: { id: true, name: true } } },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });

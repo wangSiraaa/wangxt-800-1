@@ -82,7 +82,11 @@ router.get('/', authMiddleware, async (req: AuthRequest, res: Response<ApiRespon
           orderBy: { reviewedAt: 'desc' },
         },
         payments: true,
-        _count: { select: { photos: true, reviews: true } },
+        receipts: {
+          include: { handler: { select: { id: true, name: true } } },
+          orderBy: { handledAt: 'desc' },
+        },
+        _count: { select: { photos: true, reviews: true, receipts: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -111,6 +115,10 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res: Response<ApiRes
         },
         corrections: {
           include: { corrector: { select: { id: true, name: true } } },
+        },
+        receipts: {
+          include: { handler: { select: { id: true, name: true } } },
+          orderBy: { handledAt: 'desc' },
         },
       },
     });

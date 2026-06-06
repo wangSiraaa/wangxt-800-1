@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Space, Card, message, Modal, Form, Input, Radio } from 'antd';
-import { EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, Space, Card, message, Modal, Form, Input, Radio, Select } from 'antd';
+import { EyeOutlined, CheckCircleOutlined, CloseCircleOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { reviewApi } from '../services/api';
+import { reviewApi, receiptApi } from '../services/api';
 import {
   BatchStatusLabels,
   BatchStatusColors,
@@ -11,16 +11,19 @@ import {
   formatCurrency,
   getCurrentUser,
   ReviewTypeLabels,
+  ReceiptTypeLabels,
 } from '../utils';
-import type { Batch, BatchStatus, ReviewType, Role } from '../types';
+import type { Batch, BatchStatus, ReviewType, Role, ReceiptType } from '../types';
 
 const ReviewList: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Batch[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [receiptModalVisible, setReceiptModalVisible] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
   const [form] = Form.useForm();
+  const [receiptForm] = Form.useForm();
   const currentUser = getCurrentUser();
 
   const fetchData = async () => {
@@ -77,6 +80,34 @@ const ReviewList: React.FC = () => {
     setModalVisible(true);
   };
 
+  const handleReceiptSubmit = async (values: any) => {
+    if (!selectedBatch) return;
+    try {
+      const result = await receiptApi.submit({
+        batchId: selectedBatch.id,
+        content: values.content,
+        receiptType: values.receiptType,
+      });
+
+      if (result.success) {
+        message.success('处理回执提交成功');
+        setReceiptModalVisible(false);
+        receiptForm.resetFields();
+        setSelectedBatch(null);
+        fetchData();
+      } else {
+        message.error(result.error || '提交失败');
+      }
+    } catch (error: any) {
+      message.error(error.response?.data?.error || '提交失败');
+    }
+  };
+
+  const openReceiptModal = (record: Batch) => {
+    setSelectedBatch(record);
+    setReceiptModalVisible(true);
+  };
+
   const columns = [
     {
       title: '批次编号',
@@ -129,7 +160,7 @@ const ReviewList: React.FC = () => {
     },
     {
       title: '操作',
-      width: 200,
+      width: 280,
       fixed: 'right',
       render: (_: any, record: Batch) => (
         <Space>
@@ -142,6 +173,13 @@ const ReviewList: React.FC = () => {
             onClick={() => openReviewModal(record)}
           >
             {record.status === BatchStatus.SECOND_REVIEW ? '二次复核' : '审核'}
+          </Button>
+          <Button
+            size="small"
+            icon={<FileTextOutlined />}
+            onClick={() => openReceiptModal(record)}
+          >
+            处理回执
           </Button>
         </Space>
       ),
@@ -225,6 +263,46 @@ const ReviewList: React.FC = () => {
             rules={[{ required: true, message: '请填写审核意见' }]}
           >
             <Input.TextArea rows={4} placeholder="请填写审核意见..." />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="处理回执"
+        open={receiptModalVisible}
+        onCancel={() => {
+          setReceiptModalVisible(false);
+          setSelectedBatch(null);
+        }}
+        onOk={() => receiptForm.submit()}
+        okText="提交"
+        width={600}
+      >
+        {selectedBatch && (
+          <div style={{ marginBottom: 16, padding: 12, background: '#f5f5f5', borderRadius: 8 }}>
+            <p><strong>批次:</strong> {selectedBatch.batchNo}</p>
+            <p><strong>农户:</strong> {selectedBatch.farmer.name}</p>
+            <p><strong>重量:</strong> {formatWeight(selectedBatch.weight)} / <strong>补贴:</strong> {formatCurrency(selectedBatch.subsidyAmount)}</p>
+          </div>
+        )}
+        <Form form={receiptForm} layout="vertical" onFinish={handleReceiptSubmit}>
+          <Form.Item
+            name="receiptType"
+            label="回执类型"
+            rules={[{ required: true, message: '请选择回执类型' }]}
+          >
+            <Select placeholder="请选择回执类型">
+              {Object.entries(ReceiptTypeLabels).map(([value, label]) => (
+                <Select.Option key={value} value={value}>{label}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="content"
+            label="回执内容"
+            rules={[{ required: true, message: '请填写回执内容' }]}
+          >
+            <Input.TextArea rows={4} placeholder="请填写处理回执内容..." />
           </Form.Item>
         </Form>
       </Modal>
