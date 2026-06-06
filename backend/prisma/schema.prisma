@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batchesSubmitted Batch[] @relation("Submitter")
+  reviews          Review[]
+  payments         Payment[]
+  corrections      Correction[]
+}
+
+model Farmer {
+  id          String   @id @default(uuid())
+  idCard      String   @unique
+  name        String
+  phone       String?
+  village     String
+  town        String
+  plotNumber  String?
+  plotArea    Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  batches Batch[]
+}
+
+model SubsidyRule {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  pricePerKg      Float
+  weightThreshold Float
+  anomalyRatio    Float
+  description     String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Batch {
+  id             String   @id @default(uuid())
+  batchNo        String   @unique
+  farmerId       String
+  farmer         Farmer   @relation(fields: [farmerId], references: [id])
+  weight         Float
+  plotNumber     String
+  submitterId    String
+  submitter      User     @relation("Submitter", fields: [submitterId], references: [id])
+  status         String   @default("DRAFT")
+  subsidyAmount  Float    @default(0)
+  hasPhoto       Boolean  @default(false)
+  isAnomaly      Boolean  @default(false)
+  anomalyReason  String?
+  collectionDate DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  photos      Photo[]
+  reviews     Review[]
+  payments    Payment[]
+  corrections Correction[]
+}
+
+model Photo {
+  id         String   @id @default(uuid())
+  batchId    String
+  batch      Batch    @relation(fields: [batchId], references: [id])
+  filename   String
+  filePath   String
+  fileSize   Int
+  mimeType   String
+  uploadedAt DateTime @default(now())
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  batchId    String
+  batch      Batch    @relation(fields: [batchId], references: [id])
+  reviewerId String
+  reviewer   User     @relation(fields: [reviewerId], references: [id])
+  reviewType String
+  opinion    String
+  isPassed   Boolean
+  reviewedAt DateTime @default(now())
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  batchId   String
+  batch     Batch    @relation(fields: [batchId], references: [id])
+  amount    Float
+  payerId   String
+  payer     User     @relation(fields: [payerId], references: [id])
+  payDate   DateTime?
+  payStatus String   @default("PENDING")
+  remark    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Correction {
+  id              String   @id @default(uuid())
+  batchId         String
+  batch           Batch    @relation(fields: [batchId], references: [id])
+  correctorId     String
+  corrector       User     @relation(fields: [correctorId], references: [id])
+  originalAmount  Float
+  correctedAmount Float
+  reason          String
+  createdAt       DateTime @default(now())
+}
